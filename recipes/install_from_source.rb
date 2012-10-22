@@ -62,3 +62,8 @@ execute "nodejs make install" do
   cwd "/usr/local/src/node-v#{node['nodejs']['version']}"
   not_if {File.exists?("#{node['nodejs']['dir']}/bin/node") && `#{node['nodejs']['dir']}/bin/node --version`.chomp == "v#{node['nodejs']['version']}" }
 end
+
+file "/etc/profile.d/Z99-nodejs.sh" do
+   source "Z99-nodejs.sh"
+   mode 0555
+end
