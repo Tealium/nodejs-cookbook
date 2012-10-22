@@ -52,7 +52,7 @@ case node['platform']
     include_recipe "nodejs::install_from_source"
 end
 
-file "/etc/profile.d/Z99-nodejs.sh" do
+cookbook_file "/etc/profile.d/Z99-nodejs.sh" do
    source "Z99-nodejs.sh"
    mode 0555
 end
