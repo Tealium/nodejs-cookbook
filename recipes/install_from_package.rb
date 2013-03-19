@@ -45,7 +45,7 @@ case node['platform']
       action :add
     end
 
-    %w{ nodejs npm }.each do |pkg|
+    %w{ nodejs }.each do |pkg|
       package pkg
     end
   else
