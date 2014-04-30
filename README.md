@@ -16,7 +16,9 @@ REQUIREMENTS
 
 ## Cookbooks:
 
-* build-essential
+* [build-essential](https://github.com/opscode-cookbooks/build-essential)
+* [apt](https://github.com/cookbooks/apt)
+* [yum](https://github.com/cookbooks/yum)
 
 Opscode cookbooks (http://github.com/opscode/cookbooks/tree/master)
 
@@ -29,6 +31,7 @@ ATTRIBUTES
 * nodejs['dir'] - location where node will be installed, default /usr/local
 * nodejs['npm'] - version of npm to install
 * nodejs['npm_src_url'] - download location for npm source tarball
+* nodejs['check_sha'] - test for valid sha_sum, default: true
 
 USAGE
 =====
@@ -42,8 +45,15 @@ Include the install_from_source recipe to install node from sources:
 *  include_recipe "nodejs::install_from_source"
 
 Include the install_from_package recipe to install node from packages:
+Note that only apt (Ubuntu, Debian) appears to have up to date packages available.
+Centos, RHEL, etc are non-functional. (Try install_from_binary for those)
 
 *  include_recipe "nodejs::install_from_package"
+
+Include the install_from_binary recipe to install node from official prebuilt binaries:
+(Currently Linux x86, x86_64, armv6l only)
+
+*  include_recipe "nodejs::install_from_binary"
 
 Include the npm recipe to install npm:
 

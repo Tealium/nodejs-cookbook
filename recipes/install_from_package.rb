@@ -1,9 +1,11 @@
 #
 # Author:: Nathan L Smith (nlloyds@gmail.com)
+# Author:: Marius Ducea (marius@promethost.com)
 # Cookbook Name:: nodejs
 # Recipe:: package
 #
 # Copyright 2012, Cramer Development, Inc.
+# Copyright 2013, Opscale
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,42 +20,36 @@
 # limitations under the License.
 #
 
-case node['platform']
-  when 'centos', 'redhat', 'scientific', 'amazon', 'fedora'
-    file = '/usr/local/src/nodejs-stable-release.noarch.rpm'
-
-    remote_file file do
-      source 'http://nodejs.tchol.org/repocfg/el/nodejs-stable-release.noarch.rpm'
-      action :create_if_missing
+case node['platform_family']
+  when 'debian'
+    include_recipe "apt"
+    if node['nodejs']['legacy_packages'] == true
+      repo = 'http://ppa.launchpad.net/chris-lea/node.js-legacy/ubuntu'
+      packages = %w{ nodejs npm }
+    else
+      repo = 'http://ppa.launchpad.net/chris-lea/node.js/ubuntu'
+      packages = %w{ nodejs }
     end
-
-    yum_package 'nodejs-stable-release' do
-      source file
-      options '--nogpgcheck'
-    end
-
-    %w{ nodejs nodejs-compat-symlinks npm }.each do |pkg|
-      package pkg
-    end
-  when 'ubuntu'
     apt_repository 'node.js' do
-      uri 'http://ppa.launchpad.net/chris-lea/node.js/ubuntu'
+      uri repo
       distribution node['lsb']['codename']
       components ['main']
-      keyserver "keyserver.ubuntu.com"
+      keyserver "hkp://keyserver.ubuntu.com:80"
       key "C7917B12"
       action :add
     end
-
-    %w{ nodejs }.each do |pkg|
-      package pkg
-    end
+  when 'rhel'
+    include_recipe 'yum-epel'
+    packages = %w{ nodejs nodejs-devel npm }
+  when 'fedora'
+    packages = %w{ nodejs nodejs-devel npm }
+  when 'smartos'
+    packages = %w{ nodejs }
   else
-    include_recipe "nodejs::install_from_source"
+    Chef::Log.error "There are no nodejs packages for this platform; please use the source or binary method to install node"
+    return
 end
 
-cookbook_file "/etc/profile.d/Z99-nodejs.sh" do
-   source "Z99-nodejs.sh"
-   mode 0555
+packages.each do |node_pkg|
+  package node_pkg
 end
-

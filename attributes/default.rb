@@ -17,8 +17,23 @@
 # limitations under the License.
 #
 
-default['nodejs']['install_method'] = 'source'
-default['nodejs']['version'] = '0.8.6'
-default['nodejs']['checksum'] = 'dbd42800e69644beff5c2cf11a9d4cf6dfbd644a9a36ffdd5e8c6b8db9240854'
-default['nodejs']['dir'] = '/usr/local'
-default['nodejs']['npm'] = '1.1.48'
+case node['platform_family']
+  when "smartos", "rhel", "debian", "fedora"
+    override['nodejs']['install_method'] = 'package'
+  else
+    override['nodejs']['install_method'] = 'source'
+end
+
+override['nodejs']['version'] = '0.10.26'
+override['nodejs']['checksum'] = 'ef5e4ea6f2689ed7f781355012b942a2347e0299da0804a58de8e6281c4b1daa'
+override['nodejs']['checksum_linux_x64'] = '305bf2983c65edea6dd2c9f3669b956251af03523d31cf0a0471504fd5920aac'
+override['nodejs']['checksum_linux_x86'] = '8fa2d952556c8b5aa37c077e2735c972c522510facaa4df76d4244be88f4dc0f'
+override['nodejs']['checksum_linux_arm-pi'] = '561ec2ebfe963be8d6129f82a7d1bc112fb8fbfc0a1323ebe38ef55850f25517'
+override['nodejs']['dir'] = '/usr/local'
+override['nodejs']['npm'] = '1.4.4'
+override['nodejs']['src_url'] = "http://nodejs.org/dist"
+override['nodejs']['make_threads'] = node['cpu'] ? node['cpu']['total'].to_i : 2
+override['nodejs']['check_sha'] = true
+
+# Set this to true to install the legacy packages (0.8.x) from ubuntu/debian repositories; default is false (using the latest stable 0.10.x)
+override['nodejs']['legacy_packages'] = false

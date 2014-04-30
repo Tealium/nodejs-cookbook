@@ -8,7 +8,7 @@ task :foodcritic do
     sandbox = File.join(File.dirname(__FILE__), %w{tmp foodcritic}, @cookbook)
     prepare_foodcritic_sandbox(sandbox)
 
-    sh "foodcritic --epic-fail any #{File.dirname(sandbox)}"
+    sh "foodcritic --tags ~FC048 --epic-fail any #{File.dirname(sandbox)}"
   else
     puts "WARN: foodcritic run is skipped as Ruby #{RUBY_VERSION} is < 1.9.2."
   end
@@ -26,4 +26,11 @@ recipes resources templates}
   mkdir_p sandbox
   cp_r Dir.glob("{#{files.join(',')}}"), sandbox
   puts "\n\n"
+end
+
+begin
+  require 'kitchen/rake_tasks'
+  Kitchen::RakeTasks.new
+rescue LoadError
+  puts ">>>>> Kitchen gem not loaded, omitting tasks" unless ENV['CI']
 end
